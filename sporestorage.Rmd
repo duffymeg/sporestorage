@@ -82,7 +82,7 @@ Let's make separate Metsch and Pasteuria figures
 ```{r, plot of Pasteuria infectivity data}
 summarydata$Dose <- plyr::mapvalues(summarydata$Dose, from = c("500","2000"), to = c("500 spores/mL", "2000 spores/mL"))
 
-pastplottitle <- expression(paste("Infectivity of"~italic("Pasteuria "),"spores stored at -20 and 4°C"))
+pastplottitle <- expression(paste("Infectivity of"~italic("Pasteuria "),"spores stored at -20°C and 4°C"))
 
 pastplotplusboxplot <- summarydata %>%
   filter(Parasite=="Pasteuria") %>%
@@ -103,7 +103,7 @@ save_plot("pastplotplusboxplot.jpg", pastplotplusboxplot, base_width = 8, base_h
 ```{r, plot of Metsch infectivity data}
 summarydata$Dose <- plyr::mapvalues(summarydata$Dose, from = c("250","1000"), to = c("250 spores/mL", "1000 spores/mL"))
 
-metschplottitle <- expression(paste("Infectivity of"~italic("Metschnikowia "),"spores stored at -20 and 4°C"))
+metschplottitle <- expression(paste("Infectivity of"~italic("Metschnikowia "),"spores stored at -20°C and 4°C"))
 
 metschplotplusboxplot <- summarydata %>%
   filter(Parasite=="Metschnikowia") %>%
@@ -269,7 +269,7 @@ sporecountdata$Spores.per.Daphnia.div <- sporecountdata$Spores.per.Daphnia/1000
 sporecountdata$Parasite <- factor(sporecountdata$Parasite,
                                   c("italic('Pasteuria')","italic('Metschnikowia')"))
 
-sporeplottitle <- expression(paste("Spore yield from"~italic("Pasteuria- "),"and"~italic("Metschnikowia-"),"infected"~italic("D. dentifera "),"stored at -20 and 4°C"))
+sporeplottitle <- expression(paste("Spore yield from"~italic("Pasteuria- "),"and"~italic("Metschnikowia-"),"infected"~italic("D. dentifera "),"stored at -20°C and 4°C"))
 
 point <- scales::format_format(big.mark = ",", scientific = FALSE)
 
