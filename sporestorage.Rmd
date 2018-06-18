@@ -79,26 +79,7 @@ summarydata$storagetemp <- plyr::mapvalues(summarydata$Fridge.or.freezer, from =
 ```
 
 Let's make separate Metsch and Pasteuria figures
-```{r, plot of infectivity data}
-summarydata$Dose <- plyr::mapvalues(summarydata$Dose, from = c("250","1000"), to = c("250 spores/mL", "1000 spores/mL"))
-
-metschplottitle <- expression(paste("Infectivity of"~italic("Metschnikowia "),"spores stored at -20 and 4°C"))
-
-metschplotplusboxplot <- summarydata %>%
-  filter(Parasite=="Metschnikowia") %>%
-  ggplot(aes(x=Storage.length,y=propinf)) +
-  geom_boxplot() +
-  geom_point(shape=5,size=3,position=position_jitter()) +
-  theme_bw()  + facet_wrap(Dose~storagetemp) +
-  ggtitle(metschplottitle) +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  xlab("Length of spore storage") +
-  ylab("Proportion infected") +
-  theme(legend.position="none")
-
-metschplotplusboxplot
-save_plot("metschplotplusboxplot.jpg", metschplotplusboxplot, base_width = 10, base_height = 3)
-
+```{r, plot of Pasteuria infectivity data}
 summarydata$Dose <- plyr::mapvalues(summarydata$Dose, from = c("500","2000"), to = c("500 spores/mL", "2000 spores/mL"))
 
 pastplottitle <- expression(paste("Infectivity of"~italic("Pasteuria "),"spores stored at -20 and 4°C"))
@@ -108,7 +89,7 @@ pastplotplusboxplot <- summarydata %>%
   ggplot(aes(x=Storage.length,y=propinf)) +
   geom_boxplot() +
   geom_point(shape=5,size=3,position=position_jitter()) +
-  theme_bw()  + facet_wrap(Dose~storagetemp) +
+  theme_bw()  + facet_grid(Dose~storagetemp) +
   ggtitle(pastplottitle) +
   theme(plot.title = element_text(hjust = 0.5)) +
   xlab("Length of spore storage") +
@@ -117,6 +98,43 @@ pastplotplusboxplot <- summarydata %>%
 
 pastplotplusboxplot
 save_plot("pastplotplusboxplot.jpg", pastplotplusboxplot, base_width = 8, base_height = 6)
+```
+
+```{r, plot of Metsch infectivity data}
+summarydata$Dose <- plyr::mapvalues(summarydata$Dose, from = c("250","1000"), to = c("250 spores/mL", "1000 spores/mL"))
+
+metschplottitle <- expression(paste("Infectivity of"~italic("Metschnikowia "),"spores stored at -20 and 4°C"))
+
+metschplotplusboxplot <- summarydata %>%
+  filter(Parasite=="Metschnikowia") %>%
+  ggplot(aes(x=Storage.length,y=propinf)) +
+  geom_boxplot() +
+  geom_point(shape=5,size=3,position=position_jitter()) +
+  theme_bw()  + facet_grid(Dose~storagetemp) +
+  ggtitle(metschplottitle) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  xlab("Length of spore storage") +
+  ylab("Proportion infected") +
+  theme(legend.position="none")
+
+metschplotplusboxplot
+save_plot("metschplotplusboxplot.jpg", metschplotplusboxplot, base_width = 8, base_height = 6)
+
+metschplotplusboxplotwrap <- summarydata %>%
+  filter(Parasite=="Metschnikowia") %>%
+  ggplot(aes(x=Storage.length,y=propinf)) +
+  geom_boxplot() +
+  geom_point(shape=5,size=3,position=position_jitter()) +
+  theme_bw()  + facet_wrap(storagetemp~Dose) +
+  ggtitle(metschplottitle) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  xlab("Length of spore storage") +
+  ylab("Proportion infected") +
+  theme(legend.position="none")
+
+metschplotplusboxplotwrap
+save_plot("metschplotplusboxplotwrap.jpg", metschplotplusboxplotwrap, base_width = 10, base_height = 3)
+
 ```
 
 ### Next, let's analyze the spore infectivity data
@@ -134,7 +152,7 @@ summarydata$lengthdays <- as.numeric(as.character(summarydata$lengthdays))
 summarydata$sumuninfected <- (summarydata$sumchecked - summarydata$suminfected)
 
 metschfridgedata <- summarydata %>%
-  subset(summarydata$Parasite == "Metschnikowia" & summarydata$Fridge.or.freezer == "Fridge")
+  subset(Parasite == "Metschnikowia" & Fridge.or.freezer == "Fridge")
 
 # resource for this approach: http://www.simonqueenborough.info/R/stats-basic/glm.html
 metschfridgedatay <- cbind(metschfridgedata$suminfected, metschfridgedata$sumuninfected)
@@ -144,13 +162,52 @@ metschfridgemodel1<- glm(metschfridgedatay~metschfridgedata$Dose*metschfridgedat
 summary(metschfridgemodel1)
 
 pastdata <- summarydata %>%
-  subset(summarydata$Parasite == "Pasteuria")
+  subset(Parasite == "Pasteuria")
 
 pastdatay <- cbind(pastdata$suminfected, pastdata$sumuninfected)
 
 pastmodel1<- glm(pastdatay~pastdata$storagetemp*pastdata$lengthdays*pastdata$Dose,family = binomial)
 
 summary(pastmodel1)
+```
+
+### Posthoc analyses to get a better sense of what's going on with the Pasteuria infectivity data
+```{r, further exploration of Pasteuria infectivity data}
+past500fridgedata <- pastdata %>%
+  subset(Dose == "500 spores/mL" & Fridge.or.freezer == "Fridge")
+
+past500fridgedatay <- cbind(past500fridgedata$suminfected, past500fridgedata$sumuninfected)
+
+past500fridgemodel1<- glm(past500fridgedatay~past500fridgedata$lengthdays,family = binomial)
+
+summary(past500fridgemodel1)
+
+past2000fridgedata <- pastdata %>%
+  subset(Dose == "2000 spores/mL" & Fridge.or.freezer == "Fridge")
+
+past2000fridgedatay <- cbind(past2000fridgedata$suminfected, past2000fridgedata$sumuninfected)
+
+past2000fridgemodel1<- glm(past2000fridgedatay~past2000fridgedata$lengthdays,family = binomial)
+
+summary(past2000fridgemodel1)
+
+past500freezerdata <- pastdata %>%
+  subset(Dose == "500 spores/mL"& Fridge.or.freezer == "Freezer")
+
+past500freezerdatay <- cbind(past500freezerdata$suminfected, past500freezerdata$sumuninfected)
+
+past500freezermodel1<- glm(past500freezerdatay~past500freezerdata$lengthdays,family = binomial)
+
+summary(past500freezermodel1)
+
+past2000freezerdata <- pastdata %>%
+  subset(Dose == "2000 spores/mL" & Fridge.or.freezer == "Freezer")
+
+past2000freezerdatay <- cbind(past2000freezerdata$suminfected, past2000freezerdata$sumuninfected)
+
+past2000freezermodel1<- glm(past2000freezerdatay~past2000freezerdata$lengthdays,family = binomial)
+
+summary(past2000freezermodel1)
 ```
 
 ## Analysis of Spore Yield
