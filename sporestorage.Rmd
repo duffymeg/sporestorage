@@ -88,7 +88,7 @@ pastplotplusboxplot <- summarydata %>%
   filter(Parasite=="Pasteuria") %>%
   ggplot(aes(x=Storage.length,y=propinf)) +
   geom_boxplot() +
-  geom_point(shape=5,size=3,position=position_jitter()) +
+  geom_point(shape=5,size=3,position=position_jitter(width=0.2, height=0)) +
   theme_bw()  + facet_grid(Dose~storagetemp) +
   ggtitle(pastplottitle) +
   theme(plot.title = element_text(hjust = 0.5)) +
@@ -109,7 +109,7 @@ metschplotplusboxplot <- summarydata %>%
   filter(Parasite=="Metschnikowia") %>%
   ggplot(aes(x=Storage.length,y=propinf)) +
   geom_boxplot() +
-  geom_point(shape=5,size=3,position=position_jitter()) +
+  geom_point(shape=5,size=3,position=position_jitter(width=0.2, height=0)) +
   theme_bw()  + facet_grid(Dose~storagetemp) +
   ggtitle(metschplottitle) +
   theme(plot.title = element_text(hjust = 0.5)) +
@@ -124,7 +124,7 @@ metschplotplusboxplotwrap <- summarydata %>%
   filter(Parasite=="Metschnikowia") %>%
   ggplot(aes(x=Storage.length,y=propinf)) +
   geom_boxplot() +
-  geom_point(shape=5,size=3,position=position_jitter()) +
+  geom_point(shape=5,size=3,position=position_jitter(width=0.2, height=0)) +
   theme_bw()  + facet_wrap(storagetemp~Dose) +
   ggtitle(metschplottitle) +
   theme(plot.title = element_text(hjust = 0.5)) +
